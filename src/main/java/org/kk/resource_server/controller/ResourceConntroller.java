@@ -20,7 +20,7 @@ public class ResourceConntroller {
         return resource;
     }
 
-    @PreAuthorize("hasAuthority('resource:write')")
+    @PreAuthorize("hasAuthority('SCOPE_resource:write')") // 注意加SCOPE_前缀
     @PostMapping("")
     public String add(@RequestBody  ResourceVM resourceVM){
         resource.add(resourceVM.getName());

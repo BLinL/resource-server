@@ -5,4 +5,6 @@
 
 授权
 - AuthorizationManager
+- AuthenticatedAuthorizationManager authorizationStrategy
+- PreAuthorizeAuthorizationManager 
 
