@@ -43,7 +43,7 @@ public class SecurityConfig {
         UserDetails user = User.builder()
                 .username("root")
                 .password("$2a$10$l4Km0vgDygEO.5r/Ng6u7OwdMxsYJR4D2fADT7FvY4Gr96ZHp3zCq")
-                .authorities("resource:read")
+                .authorities("resource:read resource:write")
                 .build();
         return new InMemoryUserDetailsManager(user);
     }
@@ -85,8 +85,8 @@ public class SecurityConfig {
         return (web) -> web.ignoring().requestMatchers("/api/auth/login");
     }
 
-    @Value("${spring.security.oauth2.resourceserver.jwt.key-value}")
-    RSAPublicKey key;
+//    @Value("${spring.security.oauth2.resourceserver.jwt.key-value}")
+//    RSAPublicKey key;
 //
 //    @Bean
 //    public JwtDecoder jwtDecoder() {
