@@ -1,14 +1,42 @@
 package org.kk.resource_server.controller;
 
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
+@RequestMapping("/resource")
 public class ResourceConntroller {
 
-    @GetMapping("/resource")
-    public String resource(){
-        return "this is project resource";
+    private CopyOnWriteArrayList resource = new CopyOnWriteArrayList();
+
+
+    @GetMapping("")
+    public Collection get(){
+        return resource;
+    }
+
+    @PreAuthorize("hasAuthority('resource:write')")
+    @PostMapping("")
+    public String add(@RequestBody  ResourceVM resourceVM){
+        resource.add(resourceVM.getName());
+        return "success";
+    }
+
+
+    static class ResourceVM {
+        String name;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
     }
 }
