@@ -12,6 +12,7 @@ public class User {
     private String password;
 
     private List<Permission> permissionList;
+    private List<Role> roleList;
 
     public Long getId() {
         return id;
@@ -52,4 +53,14 @@ public class User {
     public void setPermissionList(List<Permission> permissionList) {
         this.permissionList = permissionList;
     }
+
+
+    public List<Role> getRoleList() {
+        return roleList;
+    }
+
+    public void setRoleList(List<Role> roles) {
+        this.roleList = roles;
+    }
+
 }

@@ -69,7 +69,7 @@ public class SecurityConfig {
                         authorize
 //                                .requestMatchers(HttpMethod.GET, "/api/auth/login").permitAll() // permitAll对权限校验的fillter没有影响，Security先认证后授权，permitAll是授权部分
 //                                .requestMatchers(HttpMethod.POST, "/api/auth/login").permitAll() // permitAll对权限校验的fillter没有影响，Security先认证后授权，permitAll是授权部分
-                                .requestMatchers(HttpMethod.GET, "/resource/**").hasAuthority("SCOPE_resource:read")
+//                                .requestMatchers(HttpMethod.GET, "/resource/**").hasAuthority("resource:write")
                                 .anyRequest().authenticated()
                 )
 //                .userDetailsService(new InMemoryUserDetailsManager(user))

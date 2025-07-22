@@ -21,11 +21,11 @@
     </resultMap>
 
     <select id="selectById" resultMap="PermissionResultMap">
-        SELECT * FROM permission WHERE id = #{id}
+        SELECT * FROM t_sys_permission WHERE id = #{id}
     </select>
 
     <select id="selectAll" resultMap="PermissionResultMap">
-        SELECT * FROM permission ORDER BY sort ASC
+        SELECT * FROM t_sys_permission ORDER BY sort ASC
     </select>
     <select id="selectByUsername" resultType="org.kk.resource_server.domain.Permission">
         select p.* from t_sys_user u
@@ -37,7 +37,7 @@
     </select>
 
     <insert id="insert" parameterType="org.kk.resource_server.domain.Permission">
-        INSERT INTO permission (
+        INSERT INTO t_sys_permission (
             perm_name, perm_type, create_by, insert_time,
             update_time, parent_id, path, icon,
             component, perm, sort
@@ -49,7 +49,7 @@
     </insert>
 
     <update id="update" parameterType="org.kk.resource_server.domain.Permission">
-        UPDATE permission SET
+        UPDATE t_sys_permission SET
             perm_name = #{permName},
             perm_type = #{permType},
             create_by = #{createBy},
@@ -65,7 +65,7 @@
     </update>
 
     <delete id="deleteById">
-        DELETE FROM permission WHERE id = #{id}
+        DELETE FROM t_sys_permission WHERE id = #{id}
     </delete>
 
 </mapper>

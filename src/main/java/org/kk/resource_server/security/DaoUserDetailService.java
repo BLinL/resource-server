@@ -15,7 +15,7 @@ public class DaoUserDetailService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var sysUser = userService.findByUserName(username);
+        var sysUser = userService.getLoginUserInfo(username);
         return sysUser.orElse(null);
     }
 }

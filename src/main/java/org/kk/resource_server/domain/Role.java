@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 public class Role {
     private Integer id;
+    private String role;
     private String roleName;
     private String createdBy;
     private LocalDateTime insertTime;
@@ -15,6 +16,14 @@ public class Role {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getRoleName() {

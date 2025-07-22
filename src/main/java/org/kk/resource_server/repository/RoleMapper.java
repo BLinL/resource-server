@@ -7,7 +7,8 @@ import java.util.List;
 
 public interface RoleMapper {
 
-    Role selectById(@Param("id") Integer id);
+    Role selectById(@Param("id") Long id);
+    List<Role> selectByUserId(@Param("userId") Long userId);
 
     List<Role> selectAll();
 
