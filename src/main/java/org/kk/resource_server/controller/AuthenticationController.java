@@ -1,12 +1,10 @@
 package org.kk.resource_server.controller;
 
 
-import ch.qos.logback.core.util.TimeUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import org.kk.resource_server.vm.LoginVM;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DurationFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,21 +23,24 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Instant;
-import java.util.stream.Collectors;
 import java.time.temporal.ChronoUnit;
+import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
+//    @Autowired
+//    private AuthenticationManager authenticationManager;
     @Autowired
     private AuthenticationManagerBuilder authenticationManagerBuilder;
+
     @Autowired
     private JwtEncoder jwtEncoder;
 
     @RequestMapping("/login")
-    public ResponseEntity<JWTToken> login(@Valid @RequestBody LoginVM loginVM){
+    public ResponseEntity<JWTToken> login(@Valid @RequestBody LoginVM loginVM) throws Exception {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginVM.getUsername(),
                 loginVM.getPassword()
@@ -47,10 +48,11 @@ public class AuthenticationController {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String jwt = this.createToken(authentication, loginVM.isRememberMe());
+        String token  = this.createToken(authentication, 15 * 60);
+        String refreshToken = this.createToken(authentication,  7 * 24 * 60 * 60);
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setBearerAuth(jwt);
-        return new ResponseEntity<>(new JWTToken(jwt), httpHeaders, HttpStatus.OK);
+        httpHeaders.setBearerAuth(token);
+        return new ResponseEntity<>(new JWTToken(token,refreshToken), httpHeaders, HttpStatus.OK);
     }
 
     @GetMapping("/current-user")
@@ -69,16 +71,12 @@ public class AuthenticationController {
         return null;
     }
 
-    public String createToken(Authentication authentication, boolean rememberMe) {
+    public String createToken(Authentication authentication, long second) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
 
         Instant now = Instant.now();
         Instant validity;
-        if (rememberMe) {
-            validity = now.plus(60000, ChronoUnit.SECONDS);
-        } else {
-            validity = now.plus(60000, ChronoUnit.SECONDS);
-        }
+        validity = now.plus(second, ChronoUnit.SECONDS);
 
         // @formatter:off
         JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
@@ -99,9 +97,11 @@ public class AuthenticationController {
     static class JWTToken {
 
         private String idToken;
+        private String refreshToken;
 
-        JWTToken(String idToken) {
+        JWTToken(String idToken, String refreshToken) {
             this.idToken = idToken;
+            this.refreshToken = refreshToken;
         }
 
         @JsonProperty("id_token")
@@ -109,7 +109,17 @@ public class AuthenticationController {
             return idToken;
         }
 
-        void setIdToken(String idToken) {
+
+        @JsonProperty("refresh_token")
+        String getRefreshToken() {
+            return refreshToken;
+        }
+
+        void setRefreshToken(String refreshToken) {
+            this.refreshToken = refreshToken;
+        }
+
+        public void setIdToken(String idToken) {
             this.idToken = idToken;
         }
     }

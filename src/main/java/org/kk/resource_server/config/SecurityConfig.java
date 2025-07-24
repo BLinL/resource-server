@@ -3,19 +3,13 @@ package org.kk.resource_server.config;
 
 import com.nimbusds.jose.jwk.source.ImmutableSecret;
 import com.nimbusds.jose.util.Base64;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -25,12 +19,10 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint;
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import java.security.interfaces.RSAPublicKey;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -39,16 +31,17 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Bean
-    @Primary
-    UserDetailsService userDetailsService() {
-        UserDetails user = User.builder()
-                .username("root")
-                .password("$2a$10$l4Km0vgDygEO.5r/Ng6u7OwdMxsYJR4D2fADT7FvY4Gr96ZHp3zCq")
-                .authorities("resource:read resource:write")
-                .build();
-        return new InMemoryUserDetailsManager(user);
-    }
+//    @Bean
+//    @Primary
+//    UserDetailsService userDetailsService() {
+//        UserDetails user = User.builder()
+//                .username("root")
+//                .password("$2a$10$l4Km0vgDygEO.5r/Ng6u7OwdMxsYJR4D2fADT7FvY4Gr96ZHp3zCq")
+//                .authorities("resource:read resource:write")
+//                .build();
+//        return new InMemoryUserDetailsManager(user);
+//    }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
