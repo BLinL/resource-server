@@ -56,6 +56,6 @@ public class SysUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return password;
+        return username;
     }
 }

@@ -3,6 +3,9 @@ package org.kk.resource_server.controller;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
+import org.kk.resource_server.domain.vm.JWTToken;
+import org.kk.resource_server.security.DaoUserDetailService;
+import org.kk.resource_server.security.SysUser;
 import org.kk.resource_server.vm.LoginVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -17,13 +20,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
 import org.springframework.security.oauth2.jwt.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.Clock;
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -31,13 +35,18 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
-//    @Autowired
-//    private AuthenticationManager authenticationManager;
+    private long tokenInvalidSeconds = 15 * 60;
     @Autowired
     private AuthenticationManagerBuilder authenticationManagerBuilder;
 
     @Autowired
+    private DaoUserDetailService userDetailService;
+
+    @Autowired
     private JwtEncoder jwtEncoder;
+
+    @Autowired
+    private JwtDecoder jwtDecoder;
 
     @RequestMapping("/login")
     public ResponseEntity<JWTToken> login(@Valid @RequestBody LoginVM loginVM) throws Exception {
@@ -48,7 +57,7 @@ public class AuthenticationController {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        String token  = this.createToken(authentication, 15 * 60);
+        String token  = this.createToken(authentication, tokenInvalidSeconds);
         String refreshToken = this.createToken(authentication,  7 * 24 * 60 * 60);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setBearerAuth(token);
@@ -71,18 +80,44 @@ public class AuthenticationController {
         return null;
     }
 
+
+    @PostMapping("/refresh/token")
+    public ResponseEntity<JWTToken> refreshToken(@RequestBody JWTToken jwtToken){
+        if(!StringUtils.hasText(jwtToken.getRefreshToken())) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Jwt refreshToken = jwtDecoder.decode(jwtToken.getRefreshToken());
+        String username = refreshToken.getSubject();
+        if(!StringUtils.hasText(username)) {
+            return ResponseEntity.badRequest().build();
+        }
+        UserDetails userdetails = userDetailService.loadUserByUsername(username);
+        String idToken = this.createToken(new UsernamePasswordAuthenticationToken(username, userdetails.getPassword(),
+                userdetails.getAuthorities()), tokenInvalidSeconds);
+        return ResponseEntity.ok(new JWTToken(idToken, ""));
+    }
+
     public String createToken(Authentication authentication, long second) {
         String authorities = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(" "));
 
-        Instant now = Instant.now();
+        Instant now = Instant.now(Clock.system(ZoneOffset.ofHours(8)));
         Instant validity;
         validity = now.plus(second, ChronoUnit.SECONDS);
+
+        String username = "";
+        Class<?> aClass = authentication.getPrincipal().getClass();
+        if (aClass.equals(UsernamePasswordAuthenticationToken.class)) {
+            username = authentication.getPrincipal().toString();
+        } else if (aClass.equals(SysUser.class)) {
+            username = ((SysUser) authentication.getPrincipal()).getUsername();
+        }
 
         // @formatter:off
         JwtClaimsSet.Builder builder = JwtClaimsSet.builder()
                 .issuedAt(now)
                 .expiresAt(validity)
-                .subject(authentication.getName())
+                .subject(username)
                 .claim("scp", authorities);
 //        if (authentication.getPrincipal() instanceof UserWithId user) {
 //            builder.claim(USER_ID_CLAIM, user.getId());
@@ -94,33 +129,5 @@ public class AuthenticationController {
 
 
 
-    static class JWTToken {
 
-        private String idToken;
-        private String refreshToken;
-
-        JWTToken(String idToken, String refreshToken) {
-            this.idToken = idToken;
-            this.refreshToken = refreshToken;
-        }
-
-        @JsonProperty("id_token")
-        String getIdToken() {
-            return idToken;
-        }
-
-
-        @JsonProperty("refresh_token")
-        String getRefreshToken() {
-            return refreshToken;
-        }
-
-        void setRefreshToken(String refreshToken) {
-            this.refreshToken = refreshToken;
-        }
-
-        public void setIdToken(String idToken) {
-            this.idToken = idToken;
-        }
-    }
 }

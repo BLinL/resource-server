@@ -77,7 +77,7 @@ public class SecurityConfig {
 
     @Bean
     public WebSecurityCustomizer ignoringCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/api/auth/login");
+        return (web) -> web.ignoring().requestMatchers("/api/auth/login", "/api/auth/refresh/token");
     }
 
 //    @Value("${spring.security.oauth2.resourceserver.jwt.key-value}")
