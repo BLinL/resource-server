@@ -1,12 +1,11 @@
 package org.kk.resource_server.controller;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.Valid;
 import org.kk.resource_server.domain.vm.JWTToken;
 import org.kk.resource_server.security.DaoUserDetailService;
 import org.kk.resource_server.security.SysUser;
-import org.kk.resource_server.vm.LoginVM;
+import org.kk.resource_server.domain.vm.LoginVM;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -27,7 +26,6 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
