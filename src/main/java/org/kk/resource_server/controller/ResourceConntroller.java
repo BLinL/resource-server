@@ -1,6 +1,7 @@
 package org.kk.resource_server.controller;
 
 
+import org.kk.resource_server.domain.vm.ResourceVM;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,23 +21,13 @@ public class ResourceConntroller {
         return resource;
     }
 
-    @PreAuthorize("hasAuthority('resource:write')")
+    @PreAuthorize("hasAuthority('resource:write')") //
+//    @PreAuthorize("hasRole('ROLE_admin')") // 注意加ROLE_前缀
     @PostMapping("")
-    public String add(@RequestBody  ResourceVM resourceVM){
+    public String add(@RequestBody ResourceVM resourceVM){
         resource.add(resourceVM.getName());
         return "success";
     }
 
 
-    static class ResourceVM {
-        String name;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-    }
 }

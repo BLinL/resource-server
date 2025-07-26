@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.kk.resource_server.repository.RolePermMapper">
+
+    <resultMap id="RolePermResultMap" type="org.kk.resource_server.domain.RolePerm">
+        <id property="id" column="id"/>
+        <result property="rId" column="r_id"/>
+        <result property="pId" column="p_id"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="RolePermResultMap">
+        SELECT * FROM t_sys_role_perm WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="RolePermResultMap">
+        SELECT * FROM t_sys_role_perm
+    </select>
+
+    <insert id="insert" parameterType="org.kk.resource_server.domain.RolePerm">
+        INSERT INTO t_sys_role_perm (r_id, p_id)
+        VALUES (#{rId}, #{pId})
+    </insert>
+
+    <update id="update" parameterType="org.kk.resource_server.domain.RolePerm">
+        UPDATE t_sys_role_perm
+        SET r_id = #{rId},
+        p_id = #{pId}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_sys_role_perm WHERE id = #{id}
+    </delete>
+
+</mapper>

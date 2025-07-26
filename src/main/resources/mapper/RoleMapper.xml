@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="org.kk.resource_server.repository.RoleMapper">
+
+    <resultMap id="RoleResultMap" type="org.kk.resource_server.domain.Role">
+        <id property="id" column="id"/>
+        <result property="role" column="role"/>
+        <result property="roleName" column="role_name"/>
+        <result property="createdBy" column="created_by"/>
+        <result property="insertTime" column="insert_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="RoleResultMap">
+        SELECT * FROM t_sys_role WHERE id = #{id}
+    </select>
+
+    <select id="selectAll" resultMap="RoleResultMap">
+        SELECT * FROM t_sys_role
+    </select>
+    <select id="selectByUserId" resultType="org.kk.resource_server.domain.Role">
+        SELECT * FROM t_sys_role r
+        join t_sys_user_role ur on r.role_id = ur.r_id
+        where ur.u_id = #{userId}
+    </select>
+
+    <insert id="insert" parameterType="org.kk.resource_server.domain.Role">
+        INSERT INTO t_sys_role (role_name, created_by, insert_time, update_time)
+        VALUES (#{roleName}, #{createdBy}, #{insertTime}, #{updateTime})
+    </insert>
+
+    <update id="update" parameterType="org.kk.resource_server.domain.Role">
+        UPDATE t_sys_role
+        SET role_name = #{roleName},
+        created_by = #{createdBy},
+        insert_time = #{insertTime},
+        update_time = #{updateTime}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM t_sys_role WHERE id = #{id}
+    </delete>
+
+</mapper>

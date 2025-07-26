@@ -1,4 +1,4 @@
-package org.kk.resource_server.vm;
+package org.kk.resource_server.domain.vm;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
